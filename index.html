@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>30-Minute Productivity Log</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 760px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    .input-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea:focus {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.06s ease, background-color 0.2s ease;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .add-btn {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .add-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .clear-btn {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .clear-btn:hover {
+      background: #fecaca;
+    }
+
+    .entry-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .entry {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .entry time {
+      display: block;
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+    }
+
+    .entry p {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 12px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+
+    @media (max-width: 520px) {
+      .panel {
+        padding: 16px;
+      }
+
+      textarea {
+        min-height: 140px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="panel">
+      <h1>30-Minute Productivity Log</h1>
+      <label class="input-label" for="entryText">What did you do in the last 30 minutes?</label>
+      <textarea id="entryText" placeholder="Wrote documentation, fixed a bug, reviewed pull requests..."></textarea>
+      <div class="actions">
+        <button class="add-btn" id="addEntry">Add Entry</button>
+        <button class="clear-btn" id="clearEntries">Clear All Entries</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div id="entryList" class="entry-list"></div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'productivity-log-entries-v1';
+
+    const entryTextEl = document.getElementById('entryText');
+    const addEntryBtn = document.getElementById('addEntry');
+    const clearEntriesBtn = document.getElementById('clearEntries');
+    const entryListEl = document.getElementById('entryList');
+
+    function loadEntries() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveEntries(entries) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
+
+    function formatTime(timestamp) {
+      return new Date(timestamp).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function renderEntries(entries) {
+      entryListEl.innerHTML = '';
+
+      if (!entries.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'No entries yet. Add your first 30-minute update.';
+        entryListEl.appendChild(empty);
+        return;
+      }
+
+      entries.forEach((entry) => {
+        const item = document.createElement('article');
+        item.className = 'entry';
+
+        const time = document.createElement('time');
+        time.dateTime = new Date(entry.timestamp).toISOString();
+        time.textContent = formatTime(entry.timestamp);
+
+        const text = document.createElement('p');
+        text.textContent = entry.text;
+
+        item.append(time, text);
+        entryListEl.appendChild(item);
+      });
+    }
+
+    function addEntry() {
+      const text = entryTextEl.value.trim();
+      if (!text) return;
+
+      const entries = loadEntries();
+      entries.unshift({
+        timestamp: Date.now(),
+        text
+      });
+
+      saveEntries(entries);
+      renderEntries(entries);
+      entryTextEl.value = '';
+      entryTextEl.focus();
+    }
+
+    function clearEntries() {
+      localStorage.removeItem(STORAGE_KEY);
+      renderEntries([]);
+      entryTextEl.focus();
+    }
+
+    addEntryBtn.addEventListener('click', addEntry);
+    clearEntriesBtn.addEventListener('click', clearEntries);
+
+    entryTextEl.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        addEntry();
+      }
+    });
+
+    renderEntries(loadEntries());
+  </script>
+</body>
+</html>
