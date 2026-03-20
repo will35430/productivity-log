@@ -1,26 +1,22 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>30-Minute Productivity Log</title>
   <style>
     :root {
-      --bg-1: #f7f9ff;
-      --bg-2: #eef4ff;
+      --bg: #ffffff;
       --surface: #ffffff;
-      --text: #172036;
-      --muted: #5f6b85;
-      --border: #dbe5ff;
-      --primary: #4361ee;
-      --primary-hover: #3149bf;
-      --secondary: #06b6d4;
-      --secondary-hover: #0891b2;
-      --danger: #ef476f;
-      --danger-hover: #cf3a5e;
-      --shadow-soft: 0 12px 30px rgba(67, 97, 238, 0.12);
-      --shadow-card: 0 6px 16px rgba(23, 32, 54, 0.08);
-      --radius: 16px;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+      --radius: 14px;
     }
 
     * {
@@ -30,9 +26,9 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
       color: var(--text);
-      background: linear-gradient(160deg, var(--bg-1), var(--bg-2));
+      font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       justify-content: center;
       padding: 24px 16px;
@@ -40,49 +36,40 @@
 
     .app {
       width: 100%;
-      max-width: 860px;
+      max-width: 760px;
       display: grid;
-      gap: 18px;
+      gap: 16px;
     }
 
     .panel {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: var(--shadow-soft);
-      padding: 22px;
+      box-shadow: var(--shadow);
+      padding: 20px;
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(1.45rem, 3vw, 2rem);
+      margin: 0 0 14px;
+      font-size: clamp(1.4rem, 3vw, 2rem);
       letter-spacing: -0.02em;
       text-align: center;
-      color: #1b2b5e;
-    }
-
-    .subtitle {
-      margin: 0 0 16px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.95rem;
     }
 
     .input-label {
       display: block;
       margin-bottom: 8px;
-      color: #2f3b59;
-      font-weight: 600;
+      color: var(--muted);
       font-size: 0.95rem;
     }
 
     textarea {
       width: 100%;
-      min-height: 170px;
+      min-height: 160px;
       resize: vertical;
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 13px 14px;
+      padding: 12px 14px;
       font: inherit;
       color: var(--text);
       background: #fff;
@@ -91,8 +78,8 @@
     }
 
     textarea:focus {
-      border-color: #9db2ff;
-      box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.16);
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
     }
 
     .actions {
@@ -109,7 +96,7 @@
       font: inherit;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.06s ease, background-color 0.2s ease, opacity 0.2s ease;
+      transition: transform 0.06s ease, background-color 0.2s ease;
     }
 
     button:active {
@@ -126,105 +113,48 @@
     }
 
     .clear-btn {
-      background: var(--danger);
-      color: #fff;
+      background: #fee2e2;
+      color: #991b1b;
     }
 
     .clear-btn:hover {
-      background: var(--danger-hover);
+      background: #fecaca;
     }
 
     .entry-list {
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
 
     .entry {
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 12px;
+      padding: 12px;
       background: #fff;
-      box-shadow: var(--shadow-card);
     }
 
-    .entry-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-
-    .entry-time {
-      display: grid;
-      gap: 2px;
+    .entry time {
+      display: block;
       color: var(--muted);
-      font-size: 0.86rem;
-    }
-
-    .entry-time strong {
-      color: #2d3a62;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
     }
 
     .entry p {
       margin: 0;
       white-space: pre-wrap;
       line-height: 1.45;
-      color: #202a44;
-    }
-
-    .entry-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .edit-btn,
-    .save-btn,
-    .cancel-btn {
-      padding: 7px 12px;
-      font-size: 0.86rem;
-      border-radius: 8px;
-    }
-
-    .edit-btn,
-    .save-btn {
-      background: var(--secondary);
-      color: #fff;
-    }
-
-    .edit-btn:hover,
-    .save-btn:hover {
-      background: var(--secondary-hover);
-    }
-
-    .cancel-btn {
-      background: #eef2ff;
-      color: #2d3a62;
-      border: 1px solid #d4ddff;
-    }
-
-    .cancel-btn:hover {
-      background: #e1e8ff;
-    }
-
-    .edit-area {
-      min-height: 110px;
-      margin-top: 8px;
     }
 
     .empty {
       color: var(--muted);
       text-align: center;
-      padding: 16px;
+      padding: 12px;
       border: 1px dashed var(--border);
       border-radius: 12px;
-      background: #f8faff;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 520px) {
       .panel {
         padding: 16px;
       }
@@ -233,7 +163,7 @@
         min-height: 140px;
       }
 
-      .actions button {
+      button {
         width: 100%;
       }
     }
@@ -243,9 +173,8 @@
   <main class="app">
     <section class="panel">
       <h1>30-Minute Productivity Log</h1>
-      <p class="subtitle">Journal de travail clair, rapide et ergonomique.</p>
-      <label class="input-label" for="entryText">Qu'as-tu fait durant les 30 dernières minutes ?</label>
-      <textarea id="entryText" placeholder="Ex : J'ai terminé une review, corrigé un bug UI, envoyé un compte-rendu."></textarea>
+      <label class="input-label" for="entryText">What did you do in the last 30 minutes?</label>
+      <textarea id="entryText" placeholder="Wrote documentation, fixed a bug, reviewed pull requests..."></textarea>
       <div class="actions">
         <button class="add-btn" id="addEntry">Add Entry</button>
         <button class="clear-btn" id="clearEntries">Clear All Entries</button>
@@ -258,36 +187,17 @@
   </main>
 
   <script>
-    const STORAGE_KEY = 'productivity-log-entries-v2';
+    const STORAGE_KEY = 'productivity-log-entries-v1';
 
     const entryTextEl = document.getElementById('entryText');
     const addEntryBtn = document.getElementById('addEntry');
     const clearEntriesBtn = document.getElementById('clearEntries');
     const entryListEl = document.getElementById('entryList');
 
-    let editingEntryId = null;
-
-    function normalizeEntries(entries) {
-      return entries.map((entry) => {
-        if (entry.startTimestamp && entry.endTimestamp) {
-          return entry;
-        }
-
-        const endTimestamp = entry.timestamp || Date.now();
-        return {
-          id: entry.id || crypto.randomUUID(),
-          text: entry.text || '',
-          endTimestamp,
-          startTimestamp: endTimestamp - (30 * 60 * 1000)
-        };
-      });
-    }
-
     function loadEntries() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return normalizeEntries(Array.isArray(parsed) ? parsed : []);
+        return raw ? JSON.parse(raw) : [];
       } catch {
         return [];
       }
@@ -297,11 +207,8 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     }
 
-    function formatDateTime(timestamp) {
-      return new Date(timestamp).toLocaleString([], {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
+    function formatTime(timestamp) {
+      return new Date(timestamp).toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit'
       });
@@ -313,7 +220,7 @@
       if (!entries.length) {
         const empty = document.createElement('div');
         empty.className = 'empty';
-        empty.textContent = 'Aucune entrée pour le moment. Ajoute ton premier bloc de 30 minutes.';
+        empty.textContent = 'No entries yet. Add your first 30-minute update.';
         entryListEl.appendChild(empty);
         return;
       }
@@ -322,60 +229,14 @@
         const item = document.createElement('article');
         item.className = 'entry';
 
-        const header = document.createElement('div');
-        header.className = 'entry-head';
+        const time = document.createElement('time');
+        time.dateTime = new Date(entry.timestamp).toISOString();
+        time.textContent = formatTime(entry.timestamp);
 
-        const timeInfo = document.createElement('div');
-        timeInfo.className = 'entry-time';
+        const text = document.createElement('p');
+        text.textContent = entry.text;
 
-        const end = document.createElement('strong');
-        end.textContent = `Fin : ${formatDateTime(entry.endTimestamp)}`;
-
-        const start = document.createElement('span');
-        start.textContent = `Début : ${formatDateTime(entry.startTimestamp)}`;
-
-        timeInfo.append(end, start);
-
-        const actions = document.createElement('div');
-        actions.className = 'entry-actions';
-
-        if (editingEntryId === entry.id) {
-          const saveBtn = document.createElement('button');
-          saveBtn.className = 'save-btn';
-          saveBtn.textContent = 'Enregistrer';
-          saveBtn.type = 'button';
-          saveBtn.addEventListener('click', () => saveEdit(entry.id));
-
-          const cancelBtn = document.createElement('button');
-          cancelBtn.className = 'cancel-btn';
-          cancelBtn.textContent = 'Annuler';
-          cancelBtn.type = 'button';
-          cancelBtn.addEventListener('click', cancelEdit);
-
-          actions.append(saveBtn, cancelBtn);
-        } else {
-          const editBtn = document.createElement('button');
-          editBtn.className = 'edit-btn';
-          editBtn.textContent = 'Modifier';
-          editBtn.type = 'button';
-          editBtn.addEventListener('click', () => startEdit(entry.id));
-          actions.appendChild(editBtn);
-        }
-
-        header.append(timeInfo, actions);
-
-        if (editingEntryId === entry.id) {
-          const editArea = document.createElement('textarea');
-          editArea.className = 'edit-area';
-          editArea.id = `edit-${entry.id}`;
-          editArea.value = entry.text;
-          item.append(header, editArea);
-        } else {
-          const text = document.createElement('p');
-          text.textContent = entry.text;
-          item.append(header, text);
-        }
-
+        item.append(time, text);
         entryListEl.appendChild(item);
       });
     }
@@ -384,14 +245,9 @@
       const text = entryTextEl.value.trim();
       if (!text) return;
 
-      const endTimestamp = Date.now();
-      const startTimestamp = endTimestamp - (30 * 60 * 1000);
-
       const entries = loadEntries();
       entries.unshift({
-        id: crypto.randomUUID(),
-        startTimestamp,
-        endTimestamp,
+        timestamp: Date.now(),
         text
       });
 
@@ -401,37 +257,8 @@
       entryTextEl.focus();
     }
 
-    function startEdit(id) {
-      editingEntryId = id;
-      renderEntries(loadEntries());
-    }
-
-    function saveEdit(id) {
-      const editEl = document.getElementById(`edit-${id}`);
-      if (!editEl) return;
-
-      const newText = editEl.value.trim();
-      if (!newText) return;
-
-      const entries = loadEntries().map((entry) => (
-        entry.id === id
-          ? { ...entry, text: newText }
-          : entry
-      ));
-
-      saveEntries(entries);
-      editingEntryId = null;
-      renderEntries(entries);
-    }
-
-    function cancelEdit() {
-      editingEntryId = null;
-      renderEntries(loadEntries());
-    }
-
     function clearEntries() {
       localStorage.removeItem(STORAGE_KEY);
-      editingEntryId = null;
       renderEntries([]);
       entryTextEl.focus();
     }
@@ -445,9 +272,7 @@
       }
     });
 
-    const initialEntries = loadEntries();
-    saveEntries(initialEntries);
-    renderEntries(initialEntries);
+    renderEntries(loadEntries());
   </script>
 </body>
 </html>
