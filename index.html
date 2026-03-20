@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>30-Minute Productivity Log</title>
+  <style>
+    :root {
+      --bg-1: #eef3ff;
+      --bg-2: #dff7ff;
+      --bg-3: #f9f2ff;
+      --surface: #ffffff;
+      --text: #1f2a44;
+      --muted: #687694;
+      --border: #d8e3ff;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --accent: #06b6d4;
+      --accent-hover: #0891b2;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --chip: #eef2ff;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-panel: 0 20px 45px rgba(31, 42, 68, 0.16);
+      --shadow-card: 0 10px 24px rgba(31, 42, 68, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 0% 0%, #ffffff 0%, transparent 40%),
+                  linear-gradient(135deg, var(--bg-1), var(--bg-2) 50%, var(--bg-3));
+      display: flex;
+      justify-content: center;
+      padding: 26px 14px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 980px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, #ffffff, #fbfcff);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-panel);
+      padding: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      letter-spacing: -0.03em;
+      font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+      color: #222f73;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin: 8px 0 18px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #2b3a68;
+    }
+
+    textarea,
+    input[type="datetime-local"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 11px 12px;
+      font: inherit;
+      color: var(--text);
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea { min-height: 150px; resize: vertical; }
+
+    textarea:focus,
+    input[type="datetime-local"]:focus {
+      border-color: #a5b4fc;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 11px;
+      padding: 10px 15px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.08s ease, filter 0.2s ease;
+    }
+
+    button:hover { filter: brightness(0.98); }
+    button:active { transform: translateY(1px); }
+
+    .btn-add {
+      background: linear-gradient(135deg, #5b54f1, var(--primary));
+      color: #fff;
+    }
+
+    .btn-clear {
+      background: linear-gradient(135deg, #ff6b7c, var(--danger));
+      color: #fff;
+    }
+
+    .entry-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .entry {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+      box-shadow: var(--shadow-card);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .entry-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .entry-range {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      background: var(--chip);
+      border: 1px solid #dbe2ff;
+      border-radius: 999px;
+      padding: 5px 10px;
+      color: #394578;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    .entry p {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
+    .entry-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-edit,
+    .btn-save {
+      background: linear-gradient(135deg, #00c7e4, var(--accent));
+      color: #fff;
+      padding: 7px 11px;
+      font-size: 0.85rem;
+    }
+
+    .btn-cancel {
+      background: #f3f6ff;
+      color: #3c4a7d;
+      border: 1px solid #d6defa;
+      padding: 7px 11px;
+      font-size: 0.85rem;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 20px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      background: #f9fbff;
+    }
+
+    .edit-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    @media (max-width: 760px) {
+      .panel { padding: 16px; }
+      textarea { min-height: 130px; }
+      .time-grid { grid-template-columns: 1fr; }
+      .actions button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="panel">
+      <h1>30-Minute Productivity Log</h1>
+      <p class="subtitle">Journal moderne et clair de tes blocs de 30 minutes.</p>
+
+      <div class="stack">
+        <label for="entryText">Texte de l'entrée</label>
+        <textarea id="entryText" placeholder="Ex: Finalisation d'une feature, revue de code, réunion client..."></textarea>
+      </div>
+
+      <div class="time-grid" style="margin-top:10px;">
+        <div class="stack">
+          <label for="startTime">Début</label>
+          <input id="startTime" type="datetime-local" />
+        </div>
+        <div class="stack">
+          <label for="endTime">Fin</label>
+          <input id="endTime" type="datetime-local" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="addEntry" class="btn-add" type="button">Add Entry</button>
+        <button id="clearEntries" class="btn-clear" type="button">Clear All Entries</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div id="entryList" class="entry-list"></div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEYS = ['productivity-log-entries-v2', 'productivity-log-entries-v1'];
+    const STORAGE_KEY = STORAGE_KEYS[0];
+
+    const entryTextEl = document.getElementById('entryText');
+    const startTimeEl = document.getElementById('startTime');
+    const endTimeEl = document.getElementById('endTime');
+    const addEntryBtn = document.getElementById('addEntry');
+    const clearEntriesBtn = document.getElementById('clearEntries');
+    const entryListEl = document.getElementById('entryList');
+
+    let editingId = null;
+
+    function makeId() {
+      return `entry-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+    }
+
+    function toLocalInputValue(ts) {
+      const d = new Date(ts);
+      const off = d.getTimezoneOffset();
+      const local = new Date(d.getTime() - off * 60000);
+      return local.toISOString().slice(0, 16);
+    }
+
+    function fromInputValue(value) {
+      const parsed = new Date(value).getTime();
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function resetDateInputs() {
+      const end = Date.now();
+      const start = end - 30 * 60 * 1000;
+      endTimeEl.value = toLocalInputValue(end);
+      startTimeEl.value = toLocalInputValue(start);
+    }
+
+    function normalizeEntry(entry) {
+      const end = Number(entry.endTimestamp || entry.timestamp || Date.now());
+      const start = Number(entry.startTimestamp || (end - 30 * 60 * 1000));
+      return {
+        id: entry.id || makeId(),
+        text: typeof entry.text === 'string' ? entry.text : '',
+        startTimestamp: start,
+        endTimestamp: end
+      };
+    }
+
+    function loadEntries() {
+      for (const key of STORAGE_KEYS) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) continue;
+          return parsed.map(normalizeEntry);
+        } catch {
+          // ignore and continue
+        }
+      }
+      return [];
+    }
+
+    function saveEntries(entries) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
+
+    function formatDateTime(ts) {
+      return new Date(ts).toLocaleString([], {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function renderEntries(entries) {
+      entryListEl.innerHTML = '';
+
+      if (!entries.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'Aucune entrée pour le moment.';
+        entryListEl.appendChild(empty);
+        return;
+      }
+
+      entries.forEach((entry) => {
+        const card = document.createElement('article');
+        card.className = 'entry';
+
+        const head = document.createElement('div');
+        head.className = 'entry-head';
+
+        const range = document.createElement('div');
+        range.className = 'entry-range';
+
+        const startChip = document.createElement('span');
+        startChip.className = 'chip';
+        startChip.textContent = `Début : ${formatDateTime(entry.startTimestamp)}`;
+
+        const endChip = document.createElement('span');
+        endChip.className = 'chip';
+        endChip.textContent = `Fin : ${formatDateTime(entry.endTimestamp)}`;
+
+        range.append(startChip, endChip);
+
+        const actions = document.createElement('div');
+        actions.className = 'entry-actions';
+
+        if (editingId === entry.id) {
+          const saveBtn = document.createElement('button');
+          saveBtn.className = 'btn-save';
+          saveBtn.type = 'button';
+          saveBtn.textContent = 'Enregistrer';
+          saveBtn.addEventListener('click', () => saveEdit(entry.id));
+
+          const cancelBtn = document.createElement('button');
+          cancelBtn.className = 'btn-cancel';
+          cancelBtn.type = 'button';
+          cancelBtn.textContent = 'Annuler';
+          cancelBtn.addEventListener('click', cancelEdit);
+
+          actions.append(saveBtn, cancelBtn);
+        } else {
+          const editBtn = document.createElement('button');
+          editBtn.className = 'btn-edit';
+          editBtn.type = 'button';
+          editBtn.textContent = 'Modifier';
+          editBtn.addEventListener('click', () => startEdit(entry.id));
+          actions.appendChild(editBtn);
+        }
+
+        head.append(range, actions);
+        card.appendChild(head);
+
+        if (editingId === entry.id) {
+          const editGrid = document.createElement('div');
+          editGrid.className = 'edit-grid';
+
+          const textArea = document.createElement('textarea');
+          textArea.id = `edit-text-${entry.id}`;
+          textArea.value = entry.text;
+
+          const timeGrid = document.createElement('div');
+          timeGrid.className = 'time-grid';
+
+          const startWrap = document.createElement('div');
+          startWrap.className = 'stack';
+          const startLabel = document.createElement('label');
+          startLabel.setAttribute('for', `edit-start-${entry.id}`);
+          startLabel.textContent = 'Début';
+          const startInput = document.createElement('input');
+          startInput.type = 'datetime-local';
+          startInput.id = `edit-start-${entry.id}`;
+          startInput.value = toLocalInputValue(entry.startTimestamp);
+          startWrap.append(startLabel, startInput);
+
+          const endWrap = document.createElement('div');
+          endWrap.className = 'stack';
+          const endLabel = document.createElement('label');
+          endLabel.setAttribute('for', `edit-end-${entry.id}`);
+          endLabel.textContent = 'Fin';
+          const endInput = document.createElement('input');
+          endInput.type = 'datetime-local';
+          endInput.id = `edit-end-${entry.id}`;
+          endInput.value = toLocalInputValue(entry.endTimestamp);
+          endWrap.append(endLabel, endInput);
+
+          timeGrid.append(startWrap, endWrap);
+          editGrid.append(textArea, timeGrid);
+          card.appendChild(editGrid);
+        } else {
+          const text = document.createElement('p');
+          text.textContent = entry.text;
+          card.appendChild(text);
+        }
+
+        entryListEl.appendChild(card);
+      });
+    }
+
+    function addEntry() {
+      const text = entryTextEl.value.trim();
+      if (!text) return;
+
+      const start = fromInputValue(startTimeEl.value);
+      const end = fromInputValue(endTimeEl.value);
+      if (!start || !end) return;
+
+      const entry = {
+        id: makeId(),
+        text,
+        startTimestamp: start,
+        endTimestamp: end
+      };
+
+      const entries = loadEntries();
+      entries.unshift(entry);
+      saveEntries(entries);
+      renderEntries(entries);
+
+      entryTextEl.value = '';
+      resetDateInputs();
+      entryTextEl.focus();
+    }
+
+    function startEdit(id) {
+      editingId = id;
+      renderEntries(loadEntries());
+    }
+
+    function saveEdit(id) {
+      const textEl = document.getElementById(`edit-text-${id}`);
+      const startEl = document.getElementById(`edit-start-${id}`);
+      const endEl = document.getElementById(`edit-end-${id}`);
+      if (!textEl || !startEl || !endEl) return;
+
+      const text = textEl.value.trim();
+      const start = fromInputValue(startEl.value);
+      const end = fromInputValue(endEl.value);
+      if (!text || !start || !end) return;
+
+      const entries = loadEntries().map((entry) => {
+        if (entry.id !== id) return entry;
+        return {
+          ...entry,
+          text,
+          startTimestamp: start,
+          endTimestamp: end
+        };
+      });
+
+      editingId = null;
+      saveEntries(entries);
+      renderEntries(entries);
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      renderEntries(loadEntries());
+    }
+
+    function clearEntries() {
+      localStorage.removeItem(STORAGE_KEY);
+      editingId = null;
+      renderEntries([]);
+      resetDateInputs();
+      entryTextEl.focus();
+    }
+
+    addEntryBtn.addEventListener('click', addEntry);
+    clearEntriesBtn.addEventListener('click', clearEntries);
+
+    entryTextEl.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') addEntry();
+    });
+
+    const initialEntries = loadEntries();
+    saveEntries(initialEntries);
+    renderEntries(initialEntries);
+    resetDateInputs();
+  </script>
+</body>
+</html>
